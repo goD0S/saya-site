@@ -123,14 +123,22 @@
         text-wrap: pretty;
       }
 
-      /* ── 主按钮 ───────────────────────────────── */
+      /* ── 主按钮组 ─────────────────────────────── */
+      .cta-group {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        margin: 34px auto 0;
+      }
+
       .cta {
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: 7px;
         width: min(320px, 100%);
-        margin: 34px auto 0;
+        margin: 0;
         padding: 15px 28px;
         border: 1px solid transparent;
         border-radius: 16px;
@@ -182,24 +190,52 @@
         outline-offset: 4px;
       }
 
-      /* 未上线状态：链接还是 "#" 时由脚本挂上，自动退回描边样式 */
+      /* 次级按钮：便携版。描边而非实心，避免和主按钮抢注意力 */
+      .cta.is-secondary {
+        background: rgba(255, 255, 255, 0.55);
+        border-color: var(--line);
+        color: var(--fg);
+        box-shadow: none;
+      }
+
+      .cta.is-secondary .cta-label {
+        font-size: 15px;
+        font-weight: 500;
+      }
+
+      .cta.is-secondary .cta-meta {
+        opacity: 1;
+        color: var(--muted);
+        font-size: 11.5px;
+      }
+
+      .cta.is-secondary .dot {
+        background: var(--accent);
+        box-shadow: none;
+        animation: none;
+        opacity: 0.7;
+      }
+
+      .cta.is-secondary:hover {
+        border-color: var(--accent);
+        background: #ffffff;
+        box-shadow: 0 8px 24px rgba(15, 118, 110, 0.1);
+      }
+
+      /* 未上线状态：链接还是 "#" 时由脚本挂上。
+         保留品牌渐变，只关掉交互与脉冲，避免用户误以为能点。 */
       .cta.is-pending,
       .cta.is-pending:hover,
       .cta.is-pending:active {
-        background: transparent;
-        border-color: var(--line);
-        color: var(--muted);
-        box-shadow: none;
-        filter: none;
-        transform: none;
         cursor: default;
+        transform: none;
+        filter: none;
+        box-shadow: 0 8px 22px rgba(15, 118, 110, 0.18);
       }
 
       .cta.is-pending .dot {
-        background: var(--accent);
-        opacity: 0.5;
-        box-shadow: none;
         animation: none;
+        opacity: 0.55;
       }
 
       .hint {
@@ -207,12 +243,6 @@
         color: var(--faint);
         font-size: 12.5px;
         letter-spacing: 0.02em;
-      }
-
-      .mirror {
-        margin: 10px 0 0;
-        color: var(--faint);
-        font-size: 12.5px;
       }
 
       /* ── 下载量读数 ───────────────────────────── */
@@ -240,17 +270,6 @@
         color: var(--faint);
         font-size: 12px;
         letter-spacing: 0.14em;
-      }
-
-      .mirror a {
-        color: var(--accent);
-        text-decoration: none;
-        border-bottom: 1px solid rgba(11, 122, 106, 0.35);
-        padding-bottom: 1px;
-      }
-
-      .mirror a:hover {
-        border-bottom-color: var(--accent);
       }
 
       .rule {
@@ -350,34 +369,41 @@
       <p class="lede">下载后直接安装即可使用。</p>
 
       <!-- ════════════════════════════════════════════════
-           上线时只改这一处：把 href="#" 换成下载链接。
-           脚本检测到 href 还是 "#" 会自动切成「即将开放」样式。
+           发新版本时改这里：两个 href、两处 cta-meta。
+           若把 href 改回 "#"，该按钮会自动降级为「即将开放」（不可点）。
            ════════════════════════════════════════════════ -->
-      <a
-        class="cta"
-        id="download"
-        href="#"
-        aria-label="下载 HeartResonance"
-      >
-        <span class="cta-label"><span class="dot"></span>下载</span>
-        <!-- 上线后把下一行改成：v1.0.0 · 480 MB · Windows -->
-        <span class="cta-meta">即将开放</span>
-      </a>
+      <div class="cta-group">
+        <a
+          class="cta"
+          id="download"
+          href="https://dl.eris.studio/HeartResonance_v1.0.0.zip"
+          data-key="full"
+          aria-label="下载完整版 HeartResonance，822 MB"
+        >
+          <span class="cta-label"><span class="dot"></span>下载</span>
+          <span class="cta-meta">完整版 · v1.0.0 · 822 MB</span>
+        </a>
+
+        <a
+          class="cta is-secondary"
+          href="https://dl.eris.studio/HeartResonance_v1.0.0_NoInstaller.zip"
+          data-key="portable"
+          aria-label="下载便携版 HeartResonance，44 MB"
+        >
+          <span class="cta-label"><span class="dot"></span>便携版</span>
+          <span class="cta-meta">v1.0.0 · 44 MB · 需已装 TouchPlayer</span>
+        </a>
+      </div>
 
       <!-- 平台说明：按实际情况修改 -->
       <p class="hint">Windows 10 / 11 · 64 位</p>
 
-      <!-- 下载量：数据取自 GitHub Releases 的资产下载次数，取不到就整块隐藏 -->
+      <!-- 下载量：数据来自自建 Worker，未配置时整块隐藏 -->
       <p class="stat" id="stat" hidden>
         <span class="stat-num" id="download-count">0</span>
         <span class="stat-label">累计下载</span>
       </p>
 
-      <!-- 有镜像时再取消注释
-      <p class="mirror">
-        下载慢？<a href="https://github.com/goD0S/saya-site/releases/latest/download/HeartResonance.zip">试试 GitHub 镜像</a>
-      </p>
-      -->
 
       <hr class="rule" />
       <p class="feedback">
@@ -389,84 +415,52 @@
     </main>
 
     <script>
-      (() => {
-        const cta = document.getElementById("download");
-        const url = (cta.getAttribute("href") || "").trim();
+      // ══════════════════════════════════════════════════════════
+      // 下载计数：填上自建 Worker 地址即可启用，留空则整块隐藏。
+      // 例：const COUNTER_API = "https://count.eris.studio";
+      // ══════════════════════════════════════════════════════════
+      const COUNTER_API = "";
 
-        // 链接还没填：降级为不可点的占位状态
+      // 1. 链接未就绪时降级
+      document.querySelectorAll("a.cta").forEach((el) => {
+        const url = (el.getAttribute("href") || "").trim();
         if (!url || url === "#") {
-          cta.classList.add("is-pending");
-          cta.removeAttribute("href");
-          cta.setAttribute("aria-disabled", "true");
-          cta.setAttribute("tabindex", "-1");
-          return;
+          el.classList.add("is-pending");
+          el.removeAttribute("href");
+          el.setAttribute("aria-disabled", "true");
+          el.setAttribute("tabindex", "-1");
         }
+      });
 
-        // 链接已就绪：点击时给一句即时反馈，避免「点了没反应」的错觉
-        cta.addEventListener("click", () => {
-          const meta = cta.querySelector(".cta-meta");
-          if (!meta || cta.dataset.fired === "1") return;
-          cta.dataset.fired = "1";
-          const prev = meta.textContent;
-          meta.textContent = "正在开始下载…";
-          setTimeout(() => {
-            meta.textContent = prev;
-            delete cta.dataset.fired;
-          }, 1600);
-        });
-      })();
-
-      // 下载量：汇总 GitHub Releases 里所有资产的下载次数
+      // 2. 点击打点 + 读取总数
       (() => {
-        const REPO = "goD0S/saya-site";
-        const KEY = "saya:downloads";
-        const TTL = 10 * 60 * 1000; // 10 分钟内复用缓存，避开未登录 60 次/小时的限流
         const stat = document.getElementById("stat");
         const out = document.getElementById("download-count");
-        if (!stat || !out) return;
+        if (!COUNTER_API || !stat || !out) return;
 
         const paint = (n) => {
-          if (!n) return; // 0 或取不到就保持隐藏
+          if (!n) return; // 0 就保持隐藏，不显示「0 次下载」
           out.textContent = n.toLocaleString("en-US");
           stat.hidden = false;
         };
 
-        try {
-          const hit = JSON.parse(localStorage.getItem(KEY) || "null");
-          if (hit && Date.now() - hit.t < TTL) {
-            paint(hit.n);
-            return;
-          }
-        } catch (e) {
-          /* 隐私模式下 localStorage 可能不可用，忽略 */
-        }
-
-        fetch(`https://api.github.com/repos/${REPO}/releases?per_page=100`, {
-          headers: { Accept: "application/vnd.github+json" },
-        })
-          .then((r) => (r.ok ? r.json() : []))
-          .then((list) => {
-            const total = (list || []).reduce(
-              (sum, rel) =>
-                sum + (rel.assets || []).reduce((s, a) => s + (a.download_count || 0), 0),
-              0
-            );
-            // 0 说明还没发版，不要缓存，否则发版后要等 10 分钟才显示
-            if (total > 0) {
-              try {
-                localStorage.setItem(KEY, JSON.stringify({ n: total, t: Date.now() }));
-              } catch (e) {
-                /* 同上 */
-              }
-            }
-            paint(total);
-          })
+        fetch(COUNTER_API + "/count", { cache: "no-store" })
+          .then((r) => (r.ok ? r.json() : null))
+          .then((j) => j && paint(j.total))
           .catch(() => {
-            /* 网络/限流失败：静默隐藏 */
+            /* 计数服务不可用：静默隐藏，不影响下载 */
           });
+
+        document.querySelectorAll("a.cta[data-key]").forEach((el) => {
+          el.addEventListener("click", () => {
+            const url = COUNTER_API + "/hit?key=" + encodeURIComponent(el.dataset.key);
+            // keepalive 保证下载跳转后请求仍能发出去
+            fetch(url, { keepalive: true }).catch(() => {});
+          });
+        });
       })();
 
-      // 反馈邮箱：运行时拼出 mailto，绕开 Cloudflare 的邮箱地址混淆
+      // 3. 反馈邮箱：运行时拼出 mailto，绕开 Cloudflare 的邮箱地址混淆
       (() => {
         const link = document.querySelector("a.mail");
         if (!link) return;
