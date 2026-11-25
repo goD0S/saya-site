@@ -382,10 +382,8 @@
       <hr class="rule" />
       <p class="feedback">
         遇到问题？发邮件到
-        <a
-          href="mailto:2932359175@qq.com?subject=HeartResonance%20%E9%97%AE%E9%A2%98%E5%8F%8D%E9%A6%88"
-          >2932359175@qq.com</a
-        >
+        <!-- 邮箱拆成两段由脚本拼装：Cloudflare 的邮箱混淆会把明文 mailto 替换成 [email protected] -->
+        <a class="mail" data-user="2932359175" data-domain="qq.com">发邮件反馈</a>
       </p>
       <footer>HeartResonance · saya.eris.studio</footer>
     </main>
@@ -466,6 +464,16 @@
           .catch(() => {
             /* 网络/限流失败：静默隐藏 */
           });
+      })();
+
+      // 反馈邮箱：运行时拼出 mailto，绕开 Cloudflare 的邮箱地址混淆
+      (() => {
+        const link = document.querySelector("a.mail");
+        if (!link) return;
+        const addr = link.dataset.user + "@" + link.dataset.domain;
+        link.href =
+          "mailto:" + addr + "?subject=" + encodeURIComponent("HeartResonance 问题反馈");
+        link.textContent = addr;
       })();
     </script>
   </body>
