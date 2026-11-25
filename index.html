@@ -2,18 +2,37 @@
 <html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Saya</title>
-    <meta name="description" content="Saya 的小程序，敬请期待。" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>HeartResonance</title>
+    <meta name="description" content="HeartResonance 安装包下载。" />
     <meta name="theme-color" content="#0b0b0f" />
+
+    <!-- 分享预览 -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="HeartResonance" />
+    <meta property="og:description" content="HeartResonance 安装包下载。" />
+    <meta property="og:url" content="https://saya.eris.studio/" />
+
+    <!-- 内联 favicon：与按钮里的脉冲点同一意象，零请求 -->
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230b0b0f'/%3E%3Ccircle cx='16' cy='16' r='5.5' fill='%23c9a7ff'/%3E%3C/svg%3E"
+    />
+
     <style>
       :root {
         color-scheme: dark;
         --bg: #0b0b0f;
         --fg: #f4f2f7;
         --muted: #9b97a6;
+        --faint: #8a8694;
         --line: rgba(255, 255, 255, 0.12);
         --accent: #c9a7ff;
+        --accent-hi: #e2ceff;
+        --accent-lo: #b48cff;
+        --ink: #150f1f;
+        --r-card: 28px;
+        --ease: cubic-bezier(0.2, 0.7, 0.3, 1);
       }
 
       * {
@@ -22,11 +41,12 @@
 
       html,
       body {
-        height: 100%;
+        min-height: 100%;
       }
 
       body {
         margin: 0;
+        min-height: 100dvh;
         padding: 24px;
         background: var(--bg);
         color: var(--fg);
@@ -34,9 +54,10 @@
           "PingFang SC", "Microsoft YaHei", sans-serif;
         display: grid;
         place-items: center;
-        overflow: hidden;
+        -webkit-font-smoothing: antialiased;
       }
 
+      /* 背景光斑：缓慢漂移，26s 一个来回 */
       body::before,
       body::after {
         content: "";
@@ -47,6 +68,8 @@
         filter: blur(90px);
         opacity: 0.22;
         pointer-events: none;
+        z-index: 0;
+        animation: drift 26s ease-in-out infinite alternate;
       }
 
       body::before {
@@ -59,15 +82,17 @@
         background: #ff6fae;
         bottom: -35vmax;
         right: -20vmax;
+        animation-delay: -13s;
       }
 
       main {
         position: relative;
+        z-index: 1;
         width: min(560px, 100%);
-        padding: 56px 32px;
+        padding: 56px 32px 40px;
         text-align: center;
         border: 1px solid var(--line);
-        border-radius: 28px;
+        border-radius: var(--r-card);
         background: rgba(255, 255, 255, 0.03);
         backdrop-filter: blur(18px);
         box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
@@ -83,50 +108,191 @@
 
       h1 {
         margin: 0 0 14px;
-        font-size: clamp(26px, 5vw, 38px);
-        line-height: 1.25;
-        letter-spacing: -0.02em;
+        font-size: clamp(30px, 6vw, 44px);
+        line-height: 1.2;
+        letter-spacing: -0.03em;
       }
 
-      p {
-        margin: 0;
+      .lede {
+        margin: 0 auto;
+        /* 中文别用 ch 限宽，ch 是「0」的宽度，会把句子挤压成两行 */
+        max-width: 100%;
         color: var(--muted);
         font-size: 15px;
         line-height: 1.8;
+        text-wrap: pretty;
       }
 
-      .soon {
+      /* ── 主按钮 ───────────────────────────────── */
+      .cta {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 7px;
+        width: min(320px, 100%);
+        margin: 34px auto 0;
+        padding: 15px 28px;
+        border: 1px solid transparent;
+        border-radius: 16px;
+        background: linear-gradient(135deg, var(--accent-hi), var(--accent-lo));
+        color: var(--ink);
+        text-decoration: none;
+        box-shadow: 0 10px 30px rgba(180, 140, 255, 0.28);
+        transition: transform 0.18s var(--ease), box-shadow 0.18s var(--ease),
+          filter 0.18s var(--ease);
+      }
+
+      .cta-label {
         display: inline-flex;
         align-items: center;
-        gap: 10px;
-        margin-top: 34px;
-        padding: 12px 22px;
-        border: 1px solid var(--line);
-        border-radius: 999px;
-        color: var(--fg);
-        font-size: 14px;
-        text-decoration: none;
+        gap: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+      }
+
+      .cta-meta {
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 0.05em;
+        opacity: 0.66;
       }
 
       .dot {
         width: 7px;
         height: 7px;
         border-radius: 50%;
+        background: var(--ink);
+        box-shadow: 0 0 10px rgba(21, 15, 31, 0.45);
+        animation: pulse 2.4s ease-in-out infinite;
+      }
+
+      .cta:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 16px 42px rgba(180, 140, 255, 0.38);
+        filter: brightness(1.04);
+      }
+
+      .cta:active {
+        transform: translateY(0) scale(0.99);
+      }
+
+      .cta:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 4px;
+      }
+
+      /* 未上线状态：链接还是 "#" 时由脚本挂上，自动退回描边样式 */
+      .cta.is-pending,
+      .cta.is-pending:hover,
+      .cta.is-pending:active {
+        background: transparent;
+        border-color: var(--line);
+        color: var(--muted);
+        box-shadow: none;
+        filter: none;
+        transform: none;
+        cursor: default;
+      }
+
+      .cta.is-pending .dot {
         background: var(--accent);
-        box-shadow: 0 0 12px var(--accent);
+        opacity: 0.5;
+        box-shadow: none;
+        animation: none;
+      }
+
+      .hint {
+        margin: 14px 0 0;
+        color: var(--faint);
+        font-size: 12.5px;
+        letter-spacing: 0.02em;
+      }
+
+      .mirror {
+        margin: 10px 0 0;
+        color: var(--faint);
+        font-size: 12.5px;
+      }
+
+      /* ── 下载量读数 ───────────────────────────── */
+      .stat {
+        display: flex;
+        align-items: baseline;
+        justify-content: center;
+        gap: 8px;
+        margin: 22px 0 0;
+      }
+
+      /* 没有数据时整块收起，避免出现「— 次下载」 */
+      .stat[hidden] {
+        display: none;
+      }
+
+      .stat-num {
+        font: 600 26px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-variant-numeric: tabular-nums;
+        letter-spacing: 0.01em;
+        color: var(--accent);
+      }
+
+      .stat-label {
+        color: var(--faint);
+        font-size: 12px;
+        letter-spacing: 0.14em;
+      }
+
+      .mirror a {
+        color: var(--accent);
+        text-decoration: none;
+        border-bottom: 1px solid rgba(201, 167, 255, 0.35);
+        padding-bottom: 1px;
+      }
+
+      .mirror a:hover {
+        border-bottom-color: var(--accent);
+      }
+
+      .rule {
+        height: 1px;
+        margin: 34px 0 16px;
+        border: 0;
+        background: var(--line);
+      }
+
+      /* ── 问题反馈 ─────────────────────────────── */
+      .feedback {
+        margin: 0;
+        color: var(--faint);
+        font-size: 12.5px;
+        line-height: 1.7;
+        letter-spacing: 0.02em;
+      }
+
+      .feedback a {
+        color: var(--accent);
+        text-decoration: none;
+        border-bottom: 1px solid rgba(201, 167, 255, 0.32);
+        padding-bottom: 1px;
+        transition: border-color 0.18s var(--ease);
+      }
+
+      .feedback a:hover,
+      .feedback a:focus-visible {
+        border-bottom-color: var(--accent);
+      }
+
+      .feedback a:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 3px;
+        border-radius: 2px;
       }
 
       footer {
-        margin-top: 40px;
-        color: #6f6b7a;
+        margin-top: 10px;
+        color: var(--faint);
         font-size: 12px;
         letter-spacing: 0.08em;
-      }
-
-      @media (prefers-reduced-motion: no-preference) {
-        .dot {
-          animation: pulse 2.4s ease-in-out infinite;
-        }
       }
 
       @keyframes pulse {
@@ -138,19 +304,169 @@
           opacity: 0.35;
         }
       }
+
+      @keyframes drift {
+        to {
+          transform: translate3d(4vmax, -3vmax, 0) scale(1.08);
+        }
+      }
+
+      @media (max-width: 640px) {
+        main {
+          padding: 44px 24px 32px;
+          border-radius: 22px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        body {
+          padding: 16px;
+        }
+        main {
+          width: 100%;
+          padding: 38px 20px 28px;
+        }
+        .cta {
+          width: 100%;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        body::before,
+        body::after,
+        .dot {
+          animation: none;
+        }
+        .cta {
+          transition: none;
+        }
+      }
     </style>
   </head>
   <body>
     <main>
       <p class="mark">Saya</p>
-      <h1>小程序正在制作中</h1>
-      <p>做好之后，下载入口会出现在这里。</p>
+      <h1>HeartResonance</h1>
+      <p class="lede">下载后直接安装即可使用。</p>
 
-      <!-- 下载上线后，把下面这行替换成：
-           <a class="soon" href="你的下载链接"><span class="dot"></span>下载小程序</a> -->
-      <span class="soon"><span class="dot"></span>敬请期待</span>
+      <!-- ════════════════════════════════════════════════
+           上线时只改这一处：把 href="#" 换成下载链接。
+           脚本检测到 href 还是 "#" 会自动切成「即将开放」样式。
+           ════════════════════════════════════════════════ -->
+      <a
+        class="cta"
+        id="download"
+        href="#"
+        aria-label="下载 HeartResonance"
+      >
+        <span class="cta-label"><span class="dot"></span>下载</span>
+        <!-- 上线后把下一行改成：v1.0.0 · 480 MB · Windows -->
+        <span class="cta-meta">即将开放</span>
+      </a>
 
-      <footer>saya.eris.studio</footer>
+      <!-- 平台说明：按实际情况修改 -->
+      <p class="hint">Windows 10 / 11 · 64 位</p>
+
+      <!-- 下载量：数据取自 GitHub Releases 的资产下载次数，取不到就整块隐藏 -->
+      <p class="stat" id="stat" hidden>
+        <span class="stat-num" id="download-count">0</span>
+        <span class="stat-label">累计下载</span>
+      </p>
+
+      <!-- 有镜像时再取消注释
+      <p class="mirror">
+        下载慢？<a href="https://github.com/goD0S/saya-site/releases/latest/download/HeartResonance.zip">试试 GitHub 镜像</a>
+      </p>
+      -->
+
+      <hr class="rule" />
+      <p class="feedback">
+        遇到问题？发邮件到
+        <a
+          href="mailto:2932359175@qq.com?subject=HeartResonance%20%E9%97%AE%E9%A2%98%E5%8F%8D%E9%A6%88"
+          >2932359175@qq.com</a
+        >
+      </p>
+      <footer>HeartResonance · saya.eris.studio</footer>
     </main>
+
+    <script>
+      (() => {
+        const cta = document.getElementById("download");
+        const url = (cta.getAttribute("href") || "").trim();
+
+        // 链接还没填：降级为不可点的占位状态
+        if (!url || url === "#") {
+          cta.classList.add("is-pending");
+          cta.removeAttribute("href");
+          cta.setAttribute("aria-disabled", "true");
+          cta.setAttribute("tabindex", "-1");
+          return;
+        }
+
+        // 链接已就绪：点击时给一句即时反馈，避免「点了没反应」的错觉
+        cta.addEventListener("click", () => {
+          const meta = cta.querySelector(".cta-meta");
+          if (!meta || cta.dataset.fired === "1") return;
+          cta.dataset.fired = "1";
+          const prev = meta.textContent;
+          meta.textContent = "正在开始下载…";
+          setTimeout(() => {
+            meta.textContent = prev;
+            delete cta.dataset.fired;
+          }, 1600);
+        });
+      })();
+
+      // 下载量：汇总 GitHub Releases 里所有资产的下载次数
+      (() => {
+        const REPO = "goD0S/saya-site";
+        const KEY = "saya:downloads";
+        const TTL = 10 * 60 * 1000; // 10 分钟内复用缓存，避开未登录 60 次/小时的限流
+        const stat = document.getElementById("stat");
+        const out = document.getElementById("download-count");
+        if (!stat || !out) return;
+
+        const paint = (n) => {
+          if (!n) return; // 0 或取不到就保持隐藏
+          out.textContent = n.toLocaleString("en-US");
+          stat.hidden = false;
+        };
+
+        try {
+          const hit = JSON.parse(localStorage.getItem(KEY) || "null");
+          if (hit && Date.now() - hit.t < TTL) {
+            paint(hit.n);
+            return;
+          }
+        } catch (e) {
+          /* 隐私模式下 localStorage 可能不可用，忽略 */
+        }
+
+        fetch(`https://api.github.com/repos/${REPO}/releases?per_page=100`, {
+          headers: { Accept: "application/vnd.github+json" },
+        })
+          .then((r) => (r.ok ? r.json() : []))
+          .then((list) => {
+            const total = (list || []).reduce(
+              (sum, rel) =>
+                sum + (rel.assets || []).reduce((s, a) => s + (a.download_count || 0), 0),
+              0
+            );
+            // 0 说明还没发版，不要缓存，否则发版后要等 10 分钟才显示
+            if (total > 0) {
+              try {
+                localStorage.setItem(KEY, JSON.stringify({ n: total, t: Date.now() }));
+              } catch (e) {
+                /* 同上 */
+              }
+            }
+            paint(total);
+          })
+          .catch(() => {
+            /* 网络/限流失败：静默隐藏 */
+          });
+      })();
+    </script>
   </body>
 </html>
